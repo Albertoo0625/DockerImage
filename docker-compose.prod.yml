@@ -1,0 +1,13 @@
+version: "3.0"
+services:
+ nginx:
+  ports:
+   - "80:80"
+ proxycontainer:
+  build:
+   context: .
+   args: 
+    NODE_ENV: production
+  environment:
+   - NODE_ENV=production
+  command: node server.js
