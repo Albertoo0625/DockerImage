@@ -4,9 +4,12 @@ const http = require('http');
 const io = require('socket.io');
 
 let assignedPort;
+let socketServer;
+let activeTunnels = []; // Array to store the active ngrok tunnels
 
 const handleStream = async (req, res) => {
   const url = req.body.url;
+
   try {
     const server = http.createServer((req, serverResponse) => {
       const requestChunk = async () => {
@@ -47,11 +50,22 @@ const handleStream = async (req, res) => {
 
     // Start the server and expose it with ngrok
     try {
+      // Check the number of active tunnels
+      if (activeTunnels.length >= 3) {
+        // Close the oldest connection
+        const oldestTunnelUrl = activeTunnels.shift();
+        ngrok.disconnect(oldestTunnelUrl);
+        console.log(`Closed the oldest tunnel: ${oldestTunnelUrl}`);
+      }
+
       const ngrokUrl = await ngrok.connect({
         authtoken: '2KVGmlxJUHWrgTXlIU9wtesvpM3_39DmFsdbs5eBcQsustWvy',
         addr: assignedPort, // Use the available port
         region: 'in', // Replace with your desired ngrok region
       });
+
+      // Add the ngrok URL to the active tunnels array
+      activeTunnels.push(ngrokUrl);
 
       console.log('ngrok connected:', ngrokUrl);
 
@@ -60,8 +74,12 @@ const handleStream = async (req, res) => {
         ngrok.kill();
       });
 
-      const startSocketServer = () => {
-        const socketServer = http.createServer();
+      const startSocketServer = async (port) => {
+        if (socketServer) {
+          socketServer.close();
+        }
+
+        socketServer = http.createServer();
         const responseio = io(socketServer, {
           cors: {
             origin: '*',
@@ -76,18 +94,17 @@ const handleStream = async (req, res) => {
           socket.on('error', console.error);
         });
 
-        socketServer.listen(8080, () => {
-          console.log('Socket server listening on port 8080');
+        socketServer.listen(port, () => {
+          console.log(`Socket server listening on port ${port}`);
         });
 
-        socketServer.on('error', (error) => {
-          console.error('Socket server error:', error);
-          socketServer.close();
-          startSocketServer(); // Retry setting up the server again
+        // Close the socket server when it's no longer needed
+        socketServer.on('close', () => {
+          console.log(`Socket server on port ${port} closed`);
         });
       };
 
-      startSocketServer();
+      startSocketServer(8080);
     } catch (error) {
       console.error('Error starting ngrok:', error);
     }
