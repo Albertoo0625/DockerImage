@@ -9,23 +9,14 @@ const port=process.env.PORT || 35000;
 const mongourl=`mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
 
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+
 app.use(cors({}))
 app.enable("trust proxy");
 
-// app.use('/',(req,res)=>{
-//     console.log('it ran');
-//     res.send("<h1>Hello World!</h1>");
-// })
-
-// Use strict routes for the '/post' route
-const postRouter = require('./Routes/post');
-app.use('/post', postRouter);
-
-// Use strict routes for the '/stream' route
-const streamRouter = require('./Routes/stream');
-app.use('/stream', streamRouter);
-
-
+app.use('/',require('./Routes/root'));
+app.use('/post', require('./Routes/post'));
+app.use('/stream', require('./Routes/stream'));
 
 const connectWithRetry=()=>{
     mongoose.connect(mongourl,{

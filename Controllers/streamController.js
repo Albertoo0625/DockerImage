@@ -2,6 +2,9 @@ const axios = require('axios');
 const ngrok = require('ngrok');
 const http = require('http');
 const io = require('socket.io');
+const {NGROK_AUTHTOKEN}=require('../Config/config');
+
+console.log(NGROK_AUTHTOKEN);
 
 let assignedPort;
 let socketServer;
@@ -59,9 +62,9 @@ const handleStream = async (req, res) => {
       }
 
       const ngrokUrl = await ngrok.connect({
-        authtoken: '2KVGmlxJUHWrgTXlIU9wtesvpM3_39DmFsdbs5eBcQsustWvy',
+        authtoken: NGROK_AUTHTOKEN,
         addr: assignedPort, // Use the available port
-        region: 'in', // Replace with your desired ngrok region
+        region: 'eu', // Replace with your desired ngrok region
       });
 
       // Add the ngrok URL to the active tunnels array
