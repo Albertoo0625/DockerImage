@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon -L server.js"
+    "dev": "nodemon -L server.js",
+    "install-ngrok": "prebuild-install || npm run build-ngrok",
+    "build-ngrok": "npm install ngrok"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "prebuild-install": "^7.1.1"
   },
   "dependencies": {
     "axios": "^1.4.0",

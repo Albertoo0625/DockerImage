@@ -6,11 +6,12 @@ services:
    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro 
  proxycontainer:
   build: .
+  user: root
   depends_on:
    - mongo
    - nginx
   volumes:
-    - mongo-db:/data/db
+   - mongo-db:/data/db
   env_file:
    - ./.env
   
