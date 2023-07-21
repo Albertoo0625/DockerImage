@@ -1,0 +1,8 @@
+version: 1
+dockerfile: Dockerfile
+docker_compose:
+  services:
+    - name: my-app
+      path: docker-compose.yml
+      additional_files:
+        - path: docker-compose.dev.yml
