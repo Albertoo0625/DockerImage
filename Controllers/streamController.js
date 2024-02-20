@@ -48,7 +48,7 @@ const handleStream = async (req, res) => {
 
       serverResponse.on('close', () => {
         console.log('Connection closed by the client');
-        // You can handle any cleanup or additional logic here
+       
       });
     });
 
@@ -73,7 +73,7 @@ const handleStream = async (req, res) => {
             const ngrokUrl = await ngrok.connect({
               authtoken: '2KVGmlxJUHWrgTXlIU9wtesvpM3_39DmFsdbs5eBcQsustWvy',
               addr: assignedPort, // Use the available port
-              region: 'in', // Replace with your desired ngrok region
+              region: 'in', 
             });
 
             // Add the ngrok URL to the active tunnels array
